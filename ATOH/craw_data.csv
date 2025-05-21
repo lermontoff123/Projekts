@@ -1,0 +1,17 @@
+file_name,file_path,content
+album1.pdf,new_files\album1.pdf,"Содержимое album1.pdf
+"
+album2.pdf,new_files\album2.pdf,"Содержимое album2.pdf
+"
+doc1.docx,new_files\doc1.docx,"Текстdoc1.docx
+Содержимое doc1.docx"
+doc2.docx,new_files\doc2.docx,"Текстdoc2.docx
+Содержимое doc2.docx"
+sheet1.xlsx,new_files\sheet1.xlsx,"    Col1   Col2
+0  Head1  Data1
+1  Head2  Data2
+2  Head3  Data3"
+sheet2.xlsx,new_files\sheet2.xlsx,"    Col1   Col2
+0  Head1  Data1
+1  Head2  Data2
+2  Head3  Data3"
