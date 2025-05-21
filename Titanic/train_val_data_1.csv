@@ -1,0 +1,12 @@
+model,train,val
+LogisticRegression,0.81,0.78
+KNeighborsClassifier_3,0.89,0.79
+KNeighborsClassifier_5,0.85,0.79
+DecisionTreeClassifier,0.85,0.81
+RandomForestClassifier,0.85,0.82
+GradientBoostingClassifier,0.90,0.82
+SVC,0.82,0.82
+MLPClassifier,0.97,0.76
+LGBMClassifier,0.88,0.83
+XGBClassifier,0.98,0.84
+CatBoostClassifier,0.90,0.85
