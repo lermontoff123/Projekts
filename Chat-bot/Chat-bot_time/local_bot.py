@@ -3,7 +3,7 @@ from langgraph.graph import MessageGraph
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_community.llms import Ollama
-from langgraph.server import serve
+from langgraph.pregel import serve
 
 def get_current_time() -> dict:
     """Возвращает текущее время в удобных форматах"""
