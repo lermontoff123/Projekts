@@ -26,7 +26,8 @@ TIME_PHRASES = {
 }
 
 def agent_with_tools(input_text: str):
-    if any(phrase in input_text.lower() for phrase in TIME_PHRASES):
+    normalized_input = input_text.lower().strip(' ?!.,')
+    if any(phrase in normalized_input for phrase in TIME_PHRASES):
         return {"tool_calls": [{"name": "get_current_time"}]}
     return model.invoke(input_text)
 
