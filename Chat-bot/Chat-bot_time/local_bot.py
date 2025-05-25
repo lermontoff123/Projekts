@@ -12,10 +12,55 @@ def get_current_time() -> dict:
 # Локальная модель
 model = Ollama(model="mistral")  # Используем Mistral
 
+russian_time_phrases = [
+    "который час",
+    "сколько времени",
+    "сколько сейчас времени",
+    "который сейчас час",
+    "подскажите время",
+    "мне нужно точное время",
+    "текущее время",
+    "точное время",
+    "часочки",
+    "времени не подскажете",
+    "можно узнать время",
+    "продиктуйте время",
+    "сколько на ваших часах",
+    "время в данный момент",
+    "не подскажете, который час",
+    "извините, который сейчас час",
+    "скажите, пожалуйста, сколько времени",
+    "могли бы вы сказать, который час",
+    "какое сейчас время",
+    "время суток сейчас",
+    "сколько время показывает",
+    "время узнать можно"
+    ]
+english_time_phrases = [
+    "what time is it",
+    "what's the time",
+    "what is the current time",
+    "could you tell me the time",
+    "do you have the time",
+    "time please",
+    "got the time",
+    "what time do you have",
+    "may i know the time",
+    "time check",
+    "what time is it now",
+    "what's the time right now",
+    "current time please",
+    "can you give me the exact time",
+    "could you tell me what time it is",
+    "would you mind telling me the time",
+    "i need to know the time",
+    "what does the clock say"
+]
+
 # Модель инструментов
 def agent_with_tools(input_text: str):
     # Запрос времени
-    if input_text.lower() in ["время", "час", "time"]:
+    if (input_text.lower() in russian_time_phrases) or (input_text.lower() in english_time_phrases):
         return {"tool_calls": [{"name": "get_current_time"}]}
     return model.invoke(input_text)
 
