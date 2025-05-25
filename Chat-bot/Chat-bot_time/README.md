@@ -1,10 +1,8 @@
-# Локальный чат-бот с Ollama
-
-Бот с инструментом определения времени, работающий полностью локально.
+# Чат-бот с определением времени
 
 ## Установка
 
-Установите Ollama:
+Репозиторий:
 ```bash
-curl -fsSL https://ollama.com/install.sh | sh
-ollama pull mistral
+git clone https://github.com/Chat-bot/Chat-bot_time.git
+cd Chat-bot_time
