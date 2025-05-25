@@ -1,7 +1,7 @@
 # Чат-бот с определением времени
 
 ## Запуск через cmd при запущенном ollama
-
+```bash
 git clone https://github.com/Chat-bot/Chat-bot_time.git
 cd Chat-bot_time
 python -m venv .venv
