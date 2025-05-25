@@ -3,76 +3,45 @@ from langgraph.graph import MessageGraph
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_community.llms import Ollama
+from langgraph.server import serve
 
-# Инструмент для получения времени
 def get_current_time() -> dict:
-    """Возвращает текущее время UTC"""
-    return {"utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+    """Возвращает текущее время в удобных форматах"""
+    now = datetime.now(timezone.utc)
+    return {
+        "utc": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "time_ru": now.strftime("%H:%M"),
+        "date_ru": now.strftime("%d.%m.%Y"),
+        "time_en": now.strftime("%I:%M %p")
+    }
 
-# Локальная модель
-model = Ollama(model="mistral")  # Используем Mistral
+model = Ollama(
+    model="mistral",
+    system="Ты - двуязычный ассистент. Отвечай на языке пользователя."
+)
 
-russian_time_phrases = [
-    "который час",
-    "сколько времени",
-    "сколько сейчас времени",
-    "который сейчас час",
-    "подскажите время",
-    "мне нужно точное время",
-    "текущее время",
-    "точное время",
-    "часочки",
-    "времени не подскажете",
-    "можно узнать время",
-    "продиктуйте время",
-    "сколько на ваших часах",
-    "время в данный момент",
-    "не подскажете, который час",
-    "извините, который сейчас час",
-    "скажите, пожалуйста, сколько времени",
-    "могли бы вы сказать, который час",
-    "какое сейчас время",
-    "время суток сейчас",
-    "сколько время показывает",
-    "время узнать можно"
-    ]
-english_time_phrases = [
-    "what time is it",
-    "what's the time",
-    "what is the current time",
-    "could you tell me the time",
-    "do you have the time",
-    "time please",
-    "got the time",
-    "what time do you have",
-    "may i know the time",
-    "time check",
-    "what time is it now",
-    "what's the time right now",
-    "current time please",
-    "can you give me the exact time",
-    "could you tell me what time it is",
-    "would you mind telling me the time",
-    "i need to know the time",
-    "what does the clock say"
-]
+TIME_PHRASES = {
+    # Русские
+    "который час", "сколько времени", "текущее время",
+    "точное время", "часочки", "сколько на часах",
+    # Английские
+    "what time is it", "what's the time", "current time",
+    "do you have the time", "time please"
+}
 
-# Модель инструментов
 def agent_with_tools(input_text: str):
-    normalized_input = input_text.lower().strip(' ?!.,')
-    if (normalized_input in russian_time_phrases) or (normalized_input in english_time_phrases):
+    if any(phrase in input_text.lower() for phrase in TIME_PHRASES):
         return {"tool_calls": [{"name": "get_current_time"}]}
     return model.invoke(input_text)
 
+# Инициализация графа
 tool_node = ToolNode([get_current_time])
-
 workflow = MessageGraph()
 workflow.add_node("agent", agent_with_tools)
 workflow.add_node("tools", tool_node)
 workflow.add_edge("tools", "agent")
 workflow.set_entry_point("agent")
 
-# Логика маршрутизации
 def route_messages(state: list):
     last_message = state[-1]
     if isinstance(last_message, dict) and "tool_calls" in last_message:
@@ -85,24 +54,44 @@ workflow.set_finish_point("tools")
 
 app = workflow.compile()
 
-# Чат-интерфейс
-if __name__ == "__main__":
-    print("Бот запущен. Введите 'выход' для завершения.")
+def run_chat():
+    print("Бот запущен. Введите 'выход' или 'exit' для завершения.")
     print("The bot is running. Enter 'exit' to complete.")
     history = []
-
+    
     while True:
-        user_input = input("Вы: ")
-        if user_input.lower() in ["выход", "exit"]:
+        try:
+            user_input = input("Вы: ")
+            if user_input.lower() in ["выход", "exit"]:
+                break
+                
+            history.append(HumanMessage(content=user_input))
+            response = app.invoke(history)
+            
+            for msg in response:
+                if isinstance(msg, AIMessage):
+                    print(f"Бот: {msg.content}")
+                    history.append(msg)
+                elif isinstance(msg, dict) and "utc" in msg:
+                    time_str = (
+                        f"Текущее время: {msg['time_ru']} (UTC)\n"
+                        f"Дата: {msg['date_ru']}\n"
+                        f"12h format: {msg['time_en']}"
+                    )
+                    print(f"Бот: {time_str}")
+                    history.append(AIMessage(content=time_str))
+                    
+        except KeyboardInterrupt:
+            print("\nЗавершение работы...")
             break
 
-        history.append(HumanMessage(content=user_input))
-        response = app.invoke(history)
+def main():
+    # Режим для langgraph dev
+    serve(app, port=7860)
 
-        for msg in response:
-            if isinstance(msg, AIMessage):
-                print(f"Бот: {msg.content}")
-                history.append(msg)
-            elif isinstance(msg, dict) and "utc" in msg:  
-                print(f"Бот: Текущее время UTC - {msg['utc']}")
-                history.append(AIMessage(content=f"Текущее время: {msg['utc']}"))
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "--server":
+        main()
+    else:
+        run_chat()
