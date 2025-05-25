@@ -85,13 +85,13 @@ def run_chat():
             print("\nЗавершение работы...")
             break
 
-def main():
-    # Режим для langgraph dev
-    serve(app, port=7860)
+def run_server():
+    """Веб-режим работы"""
+    serve(app, host="0.0.0.0", port=7860)
 
 if __name__ == "__main__":
     import sys
     if len(sys.argv) > 1 and sys.argv[1] == "--server":
-        main()
+        run_server()
     else:
         run_chat()
