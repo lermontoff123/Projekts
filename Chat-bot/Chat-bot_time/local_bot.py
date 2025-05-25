@@ -59,8 +59,8 @@ english_time_phrases = [
 
 # Модель инструментов
 def agent_with_tools(input_text: str):
-    # Запрос времени
-    if (input_text.lower() in russian_time_phrases) or (input_text.lower() in english_time_phrases):
+    normalized_input = input_text.lower().strip(' ?!.,')
+    if (normalized_input in russian_time_phrases) or (normalized_input in english_time_phrases):
         return {"tool_calls": [{"name": "get_current_time"}]}
     return model.invoke(input_text)
 
@@ -87,7 +87,8 @@ app = workflow.compile()
 
 # Чат-интерфейс
 if __name__ == "__main__":
-    print("Бот запущен. Введите 'выход' для завершения.\The bot is running. Enter 'exit' to complete.")
+    print("Бот запущен. Введите 'выход' для завершения.")
+    print("The bot is running. Enter 'exit' to complete.")
     history = []
 
     while True:
@@ -102,6 +103,6 @@ if __name__ == "__main__":
             if isinstance(msg, AIMessage):
                 print(f"Бот: {msg.content}")
                 history.append(msg)
-            elif isinstance(msg, dict) and "utc" in msg:  # Ответ от инструмента
+            elif isinstance(msg, dict) and "utc" in msg:  
                 print(f"Бот: Текущее время UTC - {msg['utc']}")
                 history.append(AIMessage(content=f"Текущее время: {msg['utc']}"))
