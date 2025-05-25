@@ -53,6 +53,7 @@ app = workflow.compile()
 def run_chat():
     """Консольный режим работы"""
     print("Бот запущен. Введите 'выход' или 'exit' для завершения.")
+    print("The bot is running. Enter 'exit' to exit.")
     history = []
     
     while True:
@@ -79,6 +80,7 @@ def run_chat():
                     
         except KeyboardInterrupt:
             print("\nЗавершение работы...")
+            print("\nCompletion of work...")
             break
 
 def run_server():
