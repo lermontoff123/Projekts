@@ -9,13 +9,13 @@ def get_current_time() -> dict:
     """Возвращает текущее время UTC"""
     return {"utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
 
-# Настраиваем локальную модель через Ollama
+# Локальная модель
 model = Ollama(model="mistral")  # Используем Mistral
 
-# Модифицируем модель для обработки инструментов
+# Модель инструментов
 def agent_with_tools(input_text: str):
-    # Проверяем запрос времени
-    if "время" in input_text.lower() or "time" in input_text.lower():
+    # Запрос времени
+    if input_text.lower() in ["время", "час", "time"]:
         return {"tool_calls": [{"name": "get_current_time"}]}
     return model.invoke(input_text)
 
@@ -27,7 +27,7 @@ workflow.add_node("tools", tool_node)
 workflow.add_edge("tools", "agent")
 workflow.set_entry_point("agent")
 
-# Упрощенная логика маршрутизации
+# Логика маршрутизации
 def route_messages(state: list):
     last_message = state[-1]
     if isinstance(last_message, dict) and "tool_calls" in last_message:
@@ -42,7 +42,7 @@ app = workflow.compile()
 
 # Чат-интерфейс
 if __name__ == "__main__":
-    print("Локальный бот запущен. Введите 'выход' для завершения.")
+    print("Бот запущен. Введите 'выход' для завершения.\The bot is running. Enter 'exit' to complete.")
     history = []
 
     while True:
