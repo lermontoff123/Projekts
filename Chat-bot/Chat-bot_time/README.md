@@ -4,7 +4,7 @@
 
 ## Установка
 
-1. Установите Ollama:
+Установите Ollama:
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
 ollama pull mistral
