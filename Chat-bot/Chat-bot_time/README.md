@@ -7,4 +7,4 @@ cd Chat-bot_time
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
-langgraph dev bot.py
+langgraph dev local_bot.py
